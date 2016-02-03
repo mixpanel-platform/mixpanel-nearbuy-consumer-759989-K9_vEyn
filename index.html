@@ -7,9 +7,57 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
-    <h1>Hello, World!</h1>
+    <h1>Notifications Dashboard</h1>
+    <div id="dateSelect"></div>
+    <div id="intervalSelect"></div>
+    
     <script>
-      // Run queries and display results here
+
+      var intervals = {
+            items: [
+              {label: '5 Minutes', value: '5min'},
+              {label: '1 Hour', value: '1hour'},
+              {label: '1 Day', value: '1day'},
+              {label: '1 Week', value: '1week'},
+              {label: '2 Weeks', value: '2week'},
+              {label: '30 Days', value: '30day'},
+              {label: '90 Days', value: '90day'}
+              ]
+          },
+
+      var dateSelect = $('#dateSelect').MPDatepicker();
+      var intervalSelect = $('#intervalSelect').MPSelect(intervals):
+      
+      function runQuery() {
+        var properties = getCampaigns();
+        
+        var eventObject = {
+            event: 'Signup',
+            selector: 'properties["age"] == 21'
+        };
+        var dates = dateSelect.val();
+        var interval = intervalSelect.val();
+        var params = {
+            from: dates.from,
+            to: moment(),
+            limit: 100,                             // maximum number of results to return
+            length: 14,                             // number of days each user has to complete the funnel
+        
+            // the following are undefined by default
+            where: 'properties["age"] == 21',       // an expression to filter by.
+            segment: '$browser'                     // a segmentation expression or event property.
+        };
+      }
+      
+      function getCampaigns() {
+        MP.api.propertyValues('$campaign_delivery', 'campaign_id').done(function(results) {
+          console.log(results);
+          console.log(results.values());
+        })
+      }
+      
+      getCampaigns();
+      
     </script>
   </body>
 </html>
