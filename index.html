@@ -7,10 +7,41 @@
     <script src="https://cdn.mxpnl.com/libs/mixpanel-platform/build/mixpanel-platform.v0.latest.min.js"></script>
   </head>
   <body class="mixpanel-platform-body">
+    <style>
+      #metrics {
+        margin: 15px 0;
+      }
+      .metric {
+        height: 80px;
+        border: 1px solid black;
+        padding: 30px 15px;
+        max-width: 150px;
+        display: inline-block;
+        margin-right: 30px;
+      }
+      .metric-title {
+        font-size: 14px;
+        margin-bottom: 5px;
+      }
+      .metric-data {
+        font-size: 16px;
+        font-weight: bold;
+      }
+      table {
+        width: 100%;
+        border: 1px solid black;
+        margin: 15px 0;
+      }
+      th, td {
+        padding: 10px;
+        font-size: 13px;
+        text-align: center;
+      }
+    </style>
     <h1>Notifications Dashboard</h1>
     <div id="dateSelect"></div>
     <div id="intervalSelect"></div>
-    <div id="metrics">
+    <div class="mixpanel-platform-section" id="metrics">
       <h2>Notification Overview</h2>
     </div>
     <div class="mixpanel-platform-section" id="detail">
@@ -122,6 +153,8 @@
           table += '<tr>'
           if (i === 0) {
             table += '<td colspan="' + j + '">' + campaignId + '</td>'
+          } else {
+            table += '<td></td>'
           }
           table += '<td>' + variant + '</td><td>' + sent + '</td><td>' + open + '</td><td>' + successful + '</td></tr>'
         }
