@@ -177,12 +177,12 @@
           for (var i = 0, j = data.length; i < j; i++) {
             var campaign = Object.keys(data[i])[0];
             var campaignResults = data[i][campaign];
-            funnelResults(campaign, campaignResults);
+            funnelResults(campaign, campaignResults, dates);
           }
         });
       }
       
-      function funnelResults(campaignId, results) {
+      function funnelResults(campaignId, results, dates) {
         // var graphResults = {};
         var totalSent = 0, totalSuccess = 0, sentDate = '';
         var table = '<table>';
@@ -226,7 +226,7 @@
           var graph = $('<div class="graph"></div>').appendTo(campaignDiv).hide().MPChart({
             chartType: 'line',
           });
-          MP.api.segment('$campaign_open', {where: '(string(properties["campaign_id"]) == ' + campaignId + ')', from_date: sentDate, to_date: sentDate, unit: 'hour'}).done(function(results) {
+          MP.api.segment('$campaign_open', {where: '(string(properties["campaign_id"]) == ' + campaignId + ')', from_date: dates.from, to_date: sentDate, unit: 'hour', interval: 24}).done(function(results) {
             console.log(results.values());
             graph.MPChart('setData', results.values());
           });
