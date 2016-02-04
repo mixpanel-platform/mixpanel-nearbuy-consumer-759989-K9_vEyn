@@ -37,6 +37,10 @@
         padding: 15px;
         margin: 15px 0;
       }
+      .campaign-stat {
+        display: inline-block;
+        margin-right: 50px;
+      }
       table {
         width: 100%;
       }
@@ -141,28 +145,46 @@
       }
 
       function runQuery() {
+        // remove previous query (if any)
+        $('.metric').remove();
+        $('.campaign').remove();
+        
         var dates = dateSelect.val();
         var interval = intervalSelect.val();
         
         getMetrics(dates);
         
+        var funnelPromises = [];
         for (var i = 0, j = Object.keys(campaignIds).length; i < j; i++) {
-          var campaignId = campaignIds[i];
-          var params = {
-              from: dates.from,
-              to: dates.to,
-              length: interval,
-              where: 'properties["campaign_id"] == ' + campaignId,
-              segment: 'message_id'
-          };
-          MP.api.funnel('$campaign_delivery', '$campaign_open', '$custom_event:108869', params).done(function(results) {
-            funnelResults(campaignId, results);
+          var promise = new Promise(function(resolve, reject) {
+            var campaignId = campaignIds[i];
+            var params = {
+                from: dates.from,
+                to: dates.to,
+                length: interval,
+                where: 'properties["campaign_id"] == ' + campaignId,
+                segment: 'message_id'
+            };
+            MP.api.funnel('$campaign_delivery', '$campaign_open', '$custom_event:108869', params).done(function(results) {
+              data = {};
+              data[campaignId] = results;
+              resolve(data);
+            });
           });
+          funnelPromises.push(promise);
         }
+        Promise.all(funnelPromises).then(function(data) {
+          console.log(data);
+          for (var i = 0, j = data.length; i < j; i++) {
+            console.log(data[i])
+            var campaign = Object.keys(data[i])[0];
+            var campaignResults = data[i][campaign];
+            funnelResults(campaign, campaignResults);
+          }
+        });
       }
       
       function funnelResults(campaignId, results) {
-        console.log(results);
         var graphResults = {};
         var totalSent = 0, totalSuccess = 0, sentDate = '';
         var table = '<table>';
@@ -190,6 +212,8 @@
           table += '<tr><td>' + variant + '</td><td>' + sent + '</td><td>' + open + '<br>' + openavg + 's<br>' + (open/sent*100).toFixed(1) + '%</td><td>' + successful + '<br>' + successavg + 's<br>' + (successful/open*100).toFixed(1) + '%</td></tr>';
         }
         table += '</table>';
+        
+        // if campaign meets criteria, add it to dashboard
         if (totalSent > sentThreshold) {
           var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
           $('<h3>Campaign: ' + campaignId + '</h3>').appendTo(campaignDiv);
@@ -211,7 +235,7 @@
       function weekday(date) {
         date = new Date(date);
         var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        return days[date.getDay()];
+        return days[date.getDay() + 1]; // add 1 to account for timezone offset (in PST; may not be needed elsewhere)
       }
       
       $('#detail').on('click', '.view', function() {
