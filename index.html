@@ -163,11 +163,10 @@
       
       function funnelResults(campaignId, results) {
         console.log(results);
-        var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
         var graphResults = {};
         var totalSent = 0;
         var table = '<table>';
-        table += '<tr><th>Campaign</th><th>Variant</th><th>Sent</th><th>Avg Sent to Opened Time</th><th>Opened</th><th>Avg Open to Txn Time</th><th>Successful Txn</th></tr>'; // header row
+        table += '<tr><th>Campaign</th><th>Variant</th><th>Sent</th><th>Avg Sent to Open Time</th><th>Opened</th><th>Avg Open to Txn Time</th><th>Successful Txn</th></tr>'; // header row
         for (var i = 0, j = Object.keys(results).length; i < j; i++) {
           var variant = Object.keys(results)[i];
           graphResults[variant] = {};
@@ -176,14 +175,17 @@
           for (var k = 0, l = Object.keys(variantResults).length; k < l; k++) {
             var date = Object.keys(variantResults)[k];
             sent += variantResults[date][0].count;
+            if (sent > 0 && sentDate === '') {
+              sentDate = date;
+            }
             open += variantResults[date][1].count;
             opentime += variantResults[date][1].count * variantResults[date][1].avg_time;
             successful += variantResults[date][2].count;
             successtime += variantResults[date][2].count * variantResults[date][2].avg_time;
           }
-          sentTotal += sent;
+          totalSent += sent;
           var openavg = (opentime/open).toFixed(1);
-          var successavg = successtime/successful;
+          var successavg = (successtime/successful).toFixed(1);
           table += '<tr>'
           if (i === 0) {
             table += '<td class="id" rowspan="' + j + '">' + campaignId + '</td>';
@@ -191,7 +193,9 @@
           table += '<td>' + variant + '</td><td>' + sent + '</td><td>' + openavg + '</td><td>' + open + '</td><td>' + successavg + '</td><td>' + successful + '</td></tr>';
         }
         table += '</table>';
-        if (sentTotal > sentThreshold) {
+        if (totalSent > sentThreshold) {
+          var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
+          var stats = '<div class="campaign-stats"><div class="campaign-stat"></div><div class="campaign-stat"></div><div class="campaign-stat"></div></div>'
           $(table).appendTo(campaignDiv);
         
           $('<div class="view">View Graph</div>').appendTo(campaignDiv);
@@ -205,7 +209,7 @@
       $('.view').on('click', function() {
         var $campaignDiv = $(this).parent();
         var campaign = $campaignDiv.find('.id').text();
-        MP.api.segment()
+        MP.api.segment('$campaign_open', )
       });
       
       dateSelect.on('change', function() {
