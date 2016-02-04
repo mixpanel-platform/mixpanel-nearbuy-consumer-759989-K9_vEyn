@@ -46,7 +46,7 @@
         text-align: center;
       }
       .view {
-        margin: 5px 0 0 19px;
+        margin: 5px 0 10px 19px;
         max-width: 77px;
         padding: 6px 12px;
         background-color: #61adf0;
@@ -102,7 +102,7 @@
         if (isInt(data) === false) {
           data = (data*100).toFixed(1) + '%';
         }
-        var metric = '<div class="metric"><div class="metric-title">' + title + '</div><div class="metric-data">' + data + '</div></div>'
+        var metric = '<div class="metric"><div class="metric-title">' + title + '</div><div class="metric-data">' + data + '</div></div>';
         $(metric).appendTo('#metrics');
       }
       
@@ -202,7 +202,7 @@
             chartType: 'line',
           });
           MP.api.segment('$campaign_open', {where: 'properties["campaign_id"] == ' + campaignId, from_date: sentDate, to_date: sentDate, unit: 'hour'}).done(function(results) {
-            console.log(results);
+            console.log(results.values());
             graph.MPChart('setData', results.values());
           });
         }
@@ -214,7 +214,7 @@
         return days[date.getDay()];
       }
       
-      $('.view').on('click', function() {
+      $('#detail').on('click', '.view', function() {
         $(this).parent().find('.graph').toggle();
         if ($(this).text().toLowerCase() == 'view graph') {
           $(this).text('HIDE GRAPH');
