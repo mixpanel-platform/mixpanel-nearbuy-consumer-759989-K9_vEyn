@@ -91,7 +91,7 @@
         getMetrics(dates);
         
         for (var i = 0, j = Object.keys(campaignIds).length; i < j; i++) {
-          var campaignId = Object.keys(campaignIds)[i];
+          var campaignId = campaignIds[i];
           var params = {
               from: dates.from,
               to: dates.to,
