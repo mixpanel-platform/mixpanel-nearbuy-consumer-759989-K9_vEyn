@@ -201,7 +201,7 @@
           var graph = $('<div class="graph"></div>').appendTo(campaignDiv).hide().MPChart({
             chartType: 'line',
           });
-          MP.api.segment('$campaign_open', {where: 'properties["campaign_id"] == ' + campaignId, from_date: sentDate, to_date: sentDate, unit: hour}).done(function(results) {
+          MP.api.segment('$campaign_open', {where: 'properties["campaign_id"] == ' + campaignId, from_date: sentDate, to_date: sentDate, unit: 'hour'}).done(function(results) {
             console.log(results);
             graph.MPChart('setData', results.values());
           });
