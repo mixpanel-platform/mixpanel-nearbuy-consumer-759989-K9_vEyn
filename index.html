@@ -162,7 +162,7 @@
                 from: dates.from,
                 to: dates.to,
                 length: interval,
-                where: 'properties["campaign_id"] == ' + campaignId,
+                where: '(string(properties["campaign_id"]) == ' + campaignId + ')',
                 segment: 'message_id'
             };
             MP.api.funnel('$campaign_delivery', '$campaign_open', '$custom_event:108869', params).done(function(results) {
@@ -225,7 +225,7 @@
           var graph = $('<div class="graph"></div>').appendTo(campaignDiv).hide().MPChart({
             chartType: 'line',
           });
-          MP.api.segment('$campaign_open', {where: 'properties["campaign_id"] == ' + campaignId, from_date: sentDate, to_date: sentDate, unit: 'hour'}).done(function(results) {
+          MP.api.segment('$campaign_open', {where: '(string(properties["campaign_id"]) == ' + campaignId + ')', from_date: sentDate, to_date: sentDate, unit: 'hour'}).done(function(results) {
             console.log(results.values());
             graph.MPChart('setData', results.values());
           });
