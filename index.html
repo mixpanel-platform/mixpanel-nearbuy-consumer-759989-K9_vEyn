@@ -174,9 +174,7 @@
           funnelPromises.push(promise);
         }
         Promise.all(funnelPromises).then(function(data) {
-          console.log(data);
           for (var i = 0, j = data.length; i < j; i++) {
-            console.log(data[i])
             var campaign = Object.keys(data[i])[0];
             var campaignResults = data[i][campaign];
             funnelResults(campaign, campaignResults);
@@ -185,6 +183,7 @@
       }
       
       function funnelResults(campaignId, results) {
+        console.log('happening')
         var graphResults = {};
         var totalSent = 0, totalSuccess = 0, sentDate = '';
         var table = '<table>';
@@ -217,7 +216,7 @@
         if (totalSent > sentThreshold) {
           var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
           $('<h3>Campaign: ' + campaignId + '</h3>').appendTo(campaignDiv);
-          var stats = '<div class="campaign-stats"><div class="campaign-stat">Date: ' + sentDate + '</div><div class="campaign-stat">Day of Week: ' + weekday(sentDate) + '</div><div class="campaign-stat">Overall Conversion Rate: ' + (totalSuccess/totalSent*100).toFixed(1) + '%</div></div>'
+          var stats = '<div class="campaign-stats"><div class="campaign-stat">Date: ' + sentDate + '</div><div class="campaign-stat">Day of Week: ' + weekday(sentDate) + '</div><div class="campaign-stat">Overall Conversion Rate: ' + (totalSuccess/totalSent*100).toFixed(1) + '%</div></div>';
           $(stats).appendTo(campaignDiv);
           $(table).appendTo(campaignDiv);
         
