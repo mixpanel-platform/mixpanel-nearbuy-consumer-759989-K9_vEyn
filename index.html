@@ -162,7 +162,7 @@
                 from: dates.from,
                 to: dates.to,
                 length: interval,
-                where: '(string(properties["campaign_id"]) == ' + campaignId + ')',
+                where: '(properties["campaign_id"] == ' + campaignId + ')',
                 segment: 'message_id'
             };
             MP.api.funnel('$campaign_delivery', '$campaign_open', '$custom_event:108869', params).done(function(results) {
@@ -183,7 +183,6 @@
       }
       
       function funnelResults(campaignId, results) {
-        results = results[0];
         // var graphResults = {};
         var totalSent = 0, totalSuccess = 0, sentDate = '';
         var table = '<table>';
@@ -192,6 +191,8 @@
           var variant = Object.keys(results)[i];
           // graphResults[variant] = {};
           var variantResults = results[variant];
+          console.log(variant);
+          console.log(variantResults);
           var sent = 0, open = 0, successful = 0, opentime = 0, successtime = 0;
           for (var k = 0, l = Object.keys(variantResults).length; k < l; k++) {
             var date = Object.keys(variantResults)[k];
@@ -211,7 +212,7 @@
           table += '<tr><td>' + variant + '</td><td>' + sent + '</td><td>' + open + '<br>' + openavg + 's<br>' + (open/sent*100).toFixed(1) + '%</td><td>' + successful + '<br>' + successavg + 's<br>' + (successful/open*100).toFixed(1) + '%</td></tr>';
         }
         table += '</table>';
-        
+        console.log(totalSent);
         // if campaign meets criteria, add it to dashboard
         if (totalSent > sentThreshold) {
           console.log('over threshold');
