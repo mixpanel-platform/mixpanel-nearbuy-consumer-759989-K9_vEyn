@@ -39,7 +39,7 @@
       });
       
       function isInt(n) {
-        return n & 1 === 0;
+        return n % 1 === 0;
       }
       
       function addMetric(title, data) {
@@ -90,8 +90,8 @@
         
         getMetrics(dates);
         
-        for (var i = 0, j = campaignIds.length; i < j; i++) {
-          var campaignId = campaignIds[i];
+        for (var i = 0, j = Object.keys(campaignIds).length; i < j; i++) {
+          var campaignId = Object.keys(campaignIds)[i];
           var params = {
               from: dates.from,
               to: dates.to,
