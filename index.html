@@ -183,14 +183,14 @@
       }
       
       function funnelResults(campaignId, results) {
-        console.log('happening')
-        var graphResults = {};
+        results = results[0];
+        // var graphResults = {};
         var totalSent = 0, totalSuccess = 0, sentDate = '';
         var table = '<table>';
         table += '<tr><th>Variant</th><th>Sent</th><th>Opened</th><th>Successful Txn</th></tr>'; // header row
         for (var i = 0, j = Object.keys(results).length; i < j; i++) {
           var variant = Object.keys(results)[i];
-          graphResults[variant] = {};
+          // graphResults[variant] = {};
           var variantResults = results[variant];
           var sent = 0, open = 0, successful = 0, opentime = 0, successtime = 0;
           for (var k = 0, l = Object.keys(variantResults).length; k < l; k++) {
@@ -214,6 +214,7 @@
         
         // if campaign meets criteria, add it to dashboard
         if (totalSent > sentThreshold) {
+          console.log('over threshold');
           var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
           $('<h3>Campaign: ' + campaignId + '</h3>').appendTo(campaignDiv);
           var stats = '<div class="campaign-stats"><div class="campaign-stat">Date: ' + sentDate + '</div><div class="campaign-stat">Day of Week: ' + weekday(sentDate) + '</div><div class="campaign-stat">Overall Conversion Rate: ' + (totalSuccess/totalSent*100).toFixed(1) + '%</div></div>';
