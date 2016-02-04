@@ -164,9 +164,9 @@
       function funnelResults(campaignId, results) {
         console.log(results);
         var graphResults = {};
-        var totalSent = 0;
+        var totalSent = 0, totalSuccess = 0;
         var table = '<table>';
-        table += '<tr><th>Campaign</th><th>Variant</th><th>Sent</th><th>Avg Sent to Open Time</th><th>Opened</th><th>Avg Open to Txn Time</th><th>Successful Txn</th></tr>'; // header row
+        table += '<tr><th>Variant</th><th>Sent</th><th>Opened</th><th>Successful Txn</th></tr>'; // header row
         for (var i = 0, j = Object.keys(results).length; i < j; i++) {
           var variant = Object.keys(results)[i];
           graphResults[variant] = {};
@@ -184,32 +184,43 @@
             successtime += variantResults[date][2].count * variantResults[date][2].avg_time;
           }
           totalSent += sent;
+          totalSuccess += successful;
           var openavg = (opentime/open).toFixed(1);
           var successavg = (successtime/successful).toFixed(1);
-          table += '<tr>'
-          if (i === 0) {
-            table += '<td class="id" rowspan="' + j + '">' + campaignId + '</td>';
-          }
-          table += '<td>' + variant + '</td><td>' + sent + '</td><td>' + openavg + '</td><td>' + open + '</td><td>' + successavg + '</td><td>' + successful + '</td></tr>';
+          table += '<tr><td>' + variant + '</td><td>' + sent + '</td><td>' + open + '<br>' + openavg + 's<br>' + (open/sent*100).toFixed(1) + '%</td><td>' + successful + '<br>' + successavg + 's<br>' + (sucessful/open*100).toFixed(1) + '%</td></tr>';
         }
         table += '</table>';
         if (totalSent > sentThreshold) {
           var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
-          var stats = '<div class="campaign-stats"><div class="campaign-stat"></div><div class="campaign-stat"></div><div class="campaign-stat"></div></div>'
+          $('<h3>Campaign: ' + campaignId + '</h3>').appendTo(campaignDiv);
+          var stats = '<div class="campaign-stats"><div class="campaign-stat">Date: ' + sentDate + '</div><div class="campaign-stat">Day of Week: ' + weekday(sentDate) + '</div><div class="campaign-stat">Overall Conversion Rate: ' + (totalSuccess/totalSent*100).toFixed(1) + '%</div></div>'
+          $(stats).appendTo(campaignDiv);
           $(table).appendTo(campaignDiv);
         
           $('<div class="view">View Graph</div>').appendTo(campaignDiv);
-          $('<div class="graph"></div>').appendTo(campaignDiv).hide().MPChart({
+          var graph = $('<div class="graph"></div>').appendTo(campaignDiv).hide().MPChart({
             chartType: 'line',
-            data: graphResults
+          });
+          MP.api.segment('$campaign_open', {where: 'properties["campaign_id"] == ' + campaignId, from_date: sentDate, to_date: sentDate, unit: hour}).done(function(results) {
+            console.log(results);
+            graph.MPChart('setData', results.values());
           });
         }
       }
       
+      function weekday(date) {
+        date = new Date(date);
+        var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        return days[date.getDay()];
+      }
+      
       $('.view').on('click', function() {
-        var $campaignDiv = $(this).parent();
-        var campaign = $campaignDiv.find('.id').text();
-        MP.api.segment('$campaign_open', )
+        $(this).parent().find('.graph').toggle();
+        if ($(this).text().toLowerCase() == 'view graph') {
+          $(this).text('HIDE GRAPH');
+        } else {
+          $(this).text('VIEW GRAPH');
+        }
       });
       
       dateSelect.on('change', function() {
