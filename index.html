@@ -10,6 +10,12 @@
     <h1>Notifications Dashboard</h1>
     <div id="dateSelect"></div>
     <div id="intervalSelect"></div>
+    <div id="metrics">
+      <h2>Notification Overview</h2>
+    </div>
+    <div class="mixpanel-platform-section" id="detail">
+      <h2>Notification Detail</h2>
+    </div>
     
     <script>
 
@@ -26,16 +32,65 @@
       var dateSelect = $('#dateSelect').MPDatepicker();
       var intervalSelect = $('#intervalSelect').MPSelect(intervals);
       
+      MP.api.propertyValues('$campaign_delivery', 'campaign_id').done(function(results) {
+        var campaignIds = results.values();
+        runQuery();
+      });
+      
+      function isInt(n) {
+        return n & 1 === 0;
+      }
+      
+      function addMetric(title, data) {
+        if (isInt(data) === false) {
+          data = (data*100).toFixed(1) + '%';
+        }
+        var metric = '<div class="metric"><div class="metric-title">' + title + '</div><div class="metric-data">' + data + '</div></div>'
+        $(metric).appendTo('#metrics');
+      }
+      
+      function getTotalCount(event, dates, callback) {
+        MP.api.segment(event, dates).done(function(results) {
+          var values = results.values()[event];
+          var total = 0;
+          for (var i = 0, j = Object.keys(values).length; i < j; i++) {
+            var date = Object.keys(values)[i];
+            var dayTotal = values[date];
+            total += dayTotal;
+          }
+          callback(total);
+        });
+      }
+      
+      function getMetrics(dates) {
+        // get high level stats for Notification Overview section
+        var metricPromises = [];
+        var sentPromise = new Promise(function(resolve, reject) {
+          getTotalCount('$campaign_delivery', dates, function(results) {
+            resolve(results);
+          });
+        });
+        var openPromise = new Promise(function(resolve, reject) {
+          getTotalCount('$campaign_open', dates, function(results) {
+            resolve(results);
+          });
+        });
+        metricPromises.push(sentPromise, openPromise);
+        Promise.all(metricPromises).then(function(data) {
+          addMetric('Total Notifications Sent', data[0]);
+          addMetric('Total Notifications Opened', data[1]);
+          addMetric('Overall Conversion Rate', data[1]/data[0]);
+        });
+      }
+
       function runQuery() {
-        var campaignIds = getCampaigns();
+        var dates = dateSelect.val();
+        var interval = intervalSelect.val();
+        
+        getMetrics(dates);
         
         for (var i = 0, j = campaignIds.length; i < j; i++) {
           var campaignId = campaignIds[i];
-          var eventObject = {
-              event: '$campaign_delivery',
-          };
-          var dates = dateSelect.val();
-          var interval = intervalSelect.val();
           var params = {
               from: dates.from,
               to: dates.to,
@@ -43,20 +98,34 @@
               where: 'properties["campaign_id"] == ' + campaignId,
               segment: 'message_id'
           };
-          MP.api.funnel(eventObject, params).done(function(results) {
-            funnelResults(results);
+          MP.api.funnel('$campaign_delivery', '$campaign_open', '$custom_event:108869', params).done(function(results) {
+            funnelResults(campaignId, results);
           });
         }
       }
       
-      function getCampaigns() {
-        MP.api.propertyValues('$campaign_delivery', 'campaign_id').done(function(results) {
-          return results.values();
-        });
-      }
-      
-      function funnelResults(results) {
+      function funnelResults(campaignId, results) {
         console.log(results);
+        var table = '<table>'
+        table += '<tr><th>Campaign</th><th>Variant</th><th>Notification Sent</th><th>Notification Opened</th><th>Successful Txn</th></tr>' // header row
+        for (var i = 0, j = Object.keys(results).length; i < j; i++) {
+          var variant = Object.keys(results)[i];
+          var variantResults = results[variant];
+          var sent = 0, open = 0, successful = 0;
+          for (var k = 0, l = Object.keys(variantResults).length; k < l; k++) {
+            var date = Object.keys(variantResults)[k];
+            sent += variantResults[date][0].count;
+            open += variantResults[date][1].count;
+            successful += variantResults[date][2].count;
+          }
+          table += '<tr>'
+          if (i === 0) {
+            table += '<td colspan="' + j + '">' + campaignId + '</td>'
+          }
+          table += '<td>' + variant + '</td><td>' + sent + '</td><td>' + open + '</td><td>' + successful + '</td></tr>'
+        }
+        table += '</table>'
+        $(table).appendTo('#detail');
       }
       
       dateSelect.on('change', function() {
@@ -64,7 +133,7 @@
       });
       intervalSelect.on('change', function() {
         runQuery();
-      })
+      });
       
     </script>
   </body>
