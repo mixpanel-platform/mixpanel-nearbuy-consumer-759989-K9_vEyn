@@ -84,6 +84,7 @@
         var triggers = JSON.parse(data.substring(start, end));
         console.log(triggers);
       });
+      
       var sentThreshold = 100;
       var intervals = {
             items: [
@@ -230,14 +231,12 @@
           var graph = $('<div class="graph"></div>').appendTo(campaignDiv).hide().MPChart({
             chartType: 'line',
           });
-          MP.api.segment('$campaign_open', {where: '(properties["campaign_id"] == ' + campaignId + ')', from_date: dates.from, to_date: sentDate, unit: 'hour', interval: 24}).done(function(results) {
-            // console.log(results.values());
-            graph.MPChart('setData', results.values());
-          });
+          // MP.api.segment('$campaign_open', {where: '(properties["campaign_id"] == ' + campaignId + ')', from_date: dates.from, to_date: sentDate, unit: 'hour', interval: 24}).done(function(results) {
+          //   // console.log(results.values());
+          //   graph.MPChart('setData', results.values());
+          // });
         }
       }
-      
-      console.log(mp.report.globals.project_campaigns);
       
       function weekday(date) {
         date = new Date(date);
