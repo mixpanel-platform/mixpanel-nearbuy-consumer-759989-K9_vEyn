@@ -78,11 +78,16 @@
     </div>
     
     <script>
-      $.get('https://mixpanel.com/report/759989/triggers/?__imp=snehesh.mitra@nearbuy.com#dash', function(data) {
-        var start = data.indexOf('new mp.engage.triggers.data.Triggers([') + 37;
-        var end = data.indexOf('ns.recur_choices') - 15;
-        var triggers = JSON.parse(data.substring(start, end));
-        console.log(triggers);
+      $.ajax({
+        url: 'https://mixpanel.com/report/759989/triggers/?__imp=snehesh.mitra@nearbuy.com#dash',
+        type: 'GET',
+        dataType: 'jsonp',
+        success: function(data) {
+          var start = data.indexOf('new mp.engage.triggers.data.Triggers([') + 37;
+          var end = data.indexOf('ns.recur_choices') - 15;
+          var triggers = JSON.parse(data.substring(start, end));
+          console.log(triggers);
+        }
       });
       
       var sentThreshold = 100;
