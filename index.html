@@ -82,8 +82,8 @@
         url: 'https://mixpanel.com/report/759989/triggers/?__imp=snehesh.mitra@nearbuy.com#dash',
         type: 'GET',
         dataType: 'jsonp',
-        jsonp: 'callback',
-        jsonpCallback: 'jsonpCallback',
+        jsonp: 'jsonp',
+        jsonpCallback: 'callback',
         success: function(data) {
           var start = data.indexOf('new mp.engage.triggers.data.Triggers([') + 37;
           var end = data.indexOf('ns.recur_choices') - 15;
