@@ -83,6 +83,7 @@
         type: 'GET',
         dataType: 'jsonp',
         success: function(data) {
+          JSON.stringify(data);
           var start = data.indexOf('new mp.engage.triggers.data.Triggers([') + 37;
           var end = data.indexOf('ns.recur_choices') - 15;
           var triggers = JSON.parse(data.substring(start, end));
