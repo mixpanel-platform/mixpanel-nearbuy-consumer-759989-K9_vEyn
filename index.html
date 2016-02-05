@@ -78,6 +78,12 @@
     </div>
     
     <script>
+      $.get('https://mixpanel.com/report/759989/triggers/?__imp=snehesh.mitra@nearbuy.com#dash', function(data) {
+        var start = data.indexOf('new mp.engage.triggers.data.Triggers([');
+        var end = data.indexOf('ns.recur_choices = {');
+        console.log(start, end);
+        console.log(data.substr(start, end));
+      });
       var sentThreshold = 100;
       var intervals = {
             items: [
@@ -191,8 +197,8 @@
           var variant = Object.keys(results)[i];
           // graphResults[variant] = {};
           var variantResults = results[variant];
-          console.log(variant);
-          console.log(variantResults);
+          // console.log(variant);
+          // console.log(variantResults);
           var sent = 0, open = 0, successful = 0, opentime = 0, successtime = 0;
           for (var k = 0, l = Object.keys(variantResults).length; k < l; k++) {
             var date = Object.keys(variantResults)[k];
@@ -212,10 +218,8 @@
           table += '<tr><td>' + variant + '</td><td>' + sent + '</td><td>' + open + '<br>' + openavg + 's<br>' + (open/sent*100).toFixed(1) + '%</td><td>' + successful + '<br>' + successavg + 's<br>' + (successful/open*100).toFixed(1) + '%</td></tr>';
         }
         table += '</table>';
-        console.log(totalSent);
         // if campaign meets criteria, add it to dashboard
         if (totalSent > sentThreshold) {
-          console.log('over threshold');
           var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
           $('<h3>Campaign: ' + campaignId + '</h3>').appendTo(campaignDiv);
           var stats = '<div class="campaign-stats"><div class="campaign-stat">Date: ' + sentDate + '</div><div class="campaign-stat">Day of Week: ' + weekday(sentDate) + '</div><div class="campaign-stat">Overall Conversion Rate: ' + (totalSuccess/totalSent*100).toFixed(1) + '%</div></div>';
@@ -226,8 +230,8 @@
           var graph = $('<div class="graph"></div>').appendTo(campaignDiv).hide().MPChart({
             chartType: 'line',
           });
-          MP.api.segment('$campaign_open', {where: '(string(properties["campaign_id"]) == ' + campaignId + ')', from_date: dates.from, to_date: sentDate, unit: 'hour', interval: 24}).done(function(results) {
-            console.log(results.values());
+          MP.api.segment('$campaign_open', {where: '(properties["campaign_id"] == ' + campaignId + ')', from_date: dates.from, to_date: sentDate, unit: 'hour', interval: 24}).done(function(results) {
+            // console.log(results.values());
             graph.MPChart('setData', results.values());
           });
         }
