@@ -79,10 +79,10 @@
     
     <script>
       $.get('https://mixpanel.com/report/759989/triggers/?__imp=snehesh.mitra@nearbuy.com#dash', function(data) {
-        var start = data.indexOf('new mp.engage.triggers.data.Triggers([');
-        var end = data.indexOf('ns.recur_choices = {');
+        var start = data.indexOf('new mp.engage.triggers.data.Triggers([') + 38;
+        var end = data.indexOf(');            ns.recur_choices');
         console.log(start, end);
-        console.log(data.substr(start, end));
+        console.log(data.substring(start, end));
       });
       var sentThreshold = 100;
       var intervals = {
