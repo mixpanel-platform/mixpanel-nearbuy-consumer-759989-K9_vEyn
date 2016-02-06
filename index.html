@@ -216,7 +216,7 @@
         if (totalSent > sentThreshold) {
           var campaignName = campaignjson.hasOwnProperty(campaignId) ? campaignjson[campaignId] : campaignjson2[campaignId];
           var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
-          $('<h3>Campaign: ' + campaignjson[campaignId]['name'] + '</h3>').appendTo(campaignDiv);
+          $('<h3>Campaign: ' + campaignName + '</h3>').appendTo(campaignDiv);
           var stats = '<div class="campaign-stats"><div class="campaign-stat">Date: ' + sentDate + '</div><div class="campaign-stat">Day of Week: ' + weekday(sentDate) + '</div><div class="campaign-stat">Overall Conversion Rate: ' + (totalSuccess/totalSent*100).toFixed(1) + '%</div></div>';
           $(stats).appendTo(campaignDiv);
           $(table).appendTo(campaignDiv);
