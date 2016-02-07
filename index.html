@@ -11,23 +11,41 @@
       body {
         color: rgb(95,105,131);
       }
+      h1 {
+        font-size: 20px;
+        margin-bottom: 20px;
+      }
+      #dateSelect, #intervalSelect {
+        display: inline-block;
+        vertical-align: middle;
+      }
       h2 {
         font-size: 17px;
         margin-bottom: 20px;
       }
       h3 {
+        font-size: 16px;
         margin-bottom: 10px;
+      }
+      p {
+        font-size: 14px;
+      }
+      .label {
+        display: inline-block;
+        margin-right: 10px;
+      }
+      .label.right {
+        margin-left: 278px;
       }
       #metrics {
         margin: 15px 0;
       }
       .metric {
         height: 80px;
-        border: 1px solid black;
         padding: 30px 15px;
         max-width: 150px;
         display: inline-block;
-        margin-right: 30px;
+        margin-right: 60px;
         text-align: center;
       }
       .metric-title {
@@ -46,6 +64,7 @@
       .campaign-stat {
         display: inline-block;
         margin-right: 50px;
+        font-size: 15px;
       }
       table {
         width: 100%;
@@ -74,7 +93,9 @@
 
     </style>
     <h1>Notifications Dashboard</h1>
+    <p class="label">Date Range:</p>
     <div id="dateSelect"></div>
+    <p class="label right">Time to Convert:</p>
     <div id="intervalSelect"></div>
     <div class="mixpanel-platform-section" id="metrics">
       <h2>Notification Overview</h2>
@@ -98,7 +119,7 @@
 
       var dateSelect = $('#dateSelect').MPDatepicker();
       var intervalSelect = $('#intervalSelect').MPSelect(intervals);
-      var campaignIds;
+      var campaignIds, bestCampaign = ['', 0];
       
       MP.api.propertyValues('$campaign_delivery', 'campaign_id').done(function(results) {
         campaignIds = results.values();
@@ -189,6 +210,7 @@
             funnelResults(campaign, campaignResults, dates);
           }
           $('.loading').hide();
+          addMetric('Highest Performing Campaign', bestCampaign[0]);
         });
       }
       
@@ -215,9 +237,9 @@
             }
             totalSent += sent;
             totalSuccess += successful;
-            var openavg = (opentime/open).toFixed(1);
-            var successavg = (successtime/successful).toFixed(1);
-            table += '<tr><td>' + variant + '</td><td>' + sent + '</td><td>' + open + '<br>' + openavg + 's<br>' + (open/sent*100).toFixed(1) + '%</td><td>' + successful + '<br>' + successavg + 's<br>' + (successful/open*100).toFixed(1) + '%</td></tr>';
+            var openavg = (opentime/open).toFixed(2);
+            var successavg = (successtime/successful).toFixed(2);
+            table += '<tr><td>' + variant + '</td><td>' + sent + '</td><td>' + open + '<br>' + openavg + 's<br>' + (open/sent*100).toFixed(2) + '%</td><td>' + successful + '<br>' + successavg + 's<br>' + (successful/open*100).toFixed(2) + '%</td></tr>';
           }
         }
         table += '</table>';
@@ -225,8 +247,12 @@
         if (totalSent > sentThreshold) {
           var campaignName = campaignjson.hasOwnProperty(campaignId) ? campaignjson[campaignId] : campaignjson2[campaignId];
           var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
-          $('<h3>Campaign: ' + campaignName + '</h3>').appendTo(campaignDiv);
-          var stats = '<div class="campaign-stats"><div class="campaign-stat">Date: ' + sentDate + '</div><div class="campaign-stat">Day of Week: ' + weekday(sentDate) + '</div><div class="campaign-stat">Overall Conversion Rate: ' + (totalSuccess/totalSent*100).toFixed(1) + '%</div></div>';
+          $('<h3>' + campaignName + '</h3>').appendTo(campaignDiv);
+          var overall = (totalSuccess/totalSent*100).toFixed(2);
+          if (overall > bestCampaign[1]) {
+            bestCampaign = [campaignName, overall]
+          }
+          var stats = '<div class="campaign-stats"><div class="campaign-stat">Date: ' + sentDate + '</div><div class="campaign-stat">Day of Week: ' + weekday(sentDate) + '</div><div class="campaign-stat">Overall Conversion Rate: ' + overall + '%</div></div>';
           $(stats).appendTo(campaignDiv);
           $(table).appendTo(campaignDiv);
         
