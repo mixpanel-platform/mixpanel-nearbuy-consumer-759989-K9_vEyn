@@ -215,6 +215,7 @@
           funnelPromises.push(promise);
         }
         Promise.all(funnelPromises).then(function(data) {
+          $('<div id="view">Hide Graphs</div>').appendTo('#detail');
           for (var i = 0, j = data.length; i < j; i++) {
             var campaign = Object.keys(data[i])[0];
             var campaignResults = data[i][campaign];
@@ -222,7 +223,6 @@
           }
           $('.loading').hide();
           addMetric('Highest Performing Campaign', bestCampaign[1], bestCampaign[0]);
-          $('.mpgraph').hide();
         });
       }
       
@@ -266,8 +266,7 @@
           var stats = '<div class="campaign-stats"><div class="campaign-stat">Date of First Send: ' + sentDate + '</div><div class="campaign-stat">Day of Week: ' + weekday(sentDate) + '</div><div class="campaign-stat">Overall Conversion Rate: ' + overall + '%</div></div>';
           $(stats).appendTo(campaignDiv);
           $(table).appendTo(campaignDiv);
-        
-          $('<div class="view">View Graph</div>').appendTo(campaignDiv);
+          // add graph
           var graph = $('<div class="mpgraph"></div>').appendTo(campaignDiv);
           graph.MPChart({
             chartType: 'line',
@@ -287,6 +286,7 @@
               }
             }
           });
+          // add data to graph
           MP.api.segment('$campaign_open', {where: '(properties["campaign_id"] == "' + campaignId + '")', from_date: sentDate, to_date: sentDate, unit: 'hour'}).done(function(results) {
             graph.MPChart('setData', results.values());
           });
@@ -321,12 +321,12 @@
         return days[date.getDay() + 1]; // add 1 to account for timezone offset (in PST; may not be needed elsewhere)
       }
       
-      $('#detail').on('click', '.view', function() {
-        $(this).parent().find('.mpgraph').toggle();
-        if ($(this).text().toLowerCase() == 'view graph') {
-          $(this).text('HIDE GRAPH');
+      $('#detail').on('click', '#view', function() {
+        $('.mpgraph').toggle();
+        if ($(this).text().toLowerCase() == 'view graphs') {
+          $(this).text('HIDE GRAPHS');
         } else {
-          $(this).text('VIEW GRAPH');
+          $(this).text('VIEW GRAPHS');
         }
       });
       
