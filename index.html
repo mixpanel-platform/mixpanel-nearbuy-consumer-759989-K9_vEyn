@@ -48,6 +48,9 @@
         margin-right: 60px;
         text-align: center;
       }
+      .metric:nth-child(3) {
+        margin-right: 0;
+      }
       .metric-title {
         font-size: 15px;
         margin-bottom: 5px;
@@ -131,7 +134,7 @@
       }
       
       function addMetric(title, data) {
-        if (isInt(data) === false) {
+        if (isInt(data) === false && typeof data != 'string') {
           data = (data*100).toFixed(1) + '%';
         }
         var metric = '<div class="metric"><div class="metric-title">' + title + '</div><div class="metric-data">' + data + '</div></div>';
