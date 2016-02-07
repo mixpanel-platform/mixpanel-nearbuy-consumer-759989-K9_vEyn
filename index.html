@@ -143,7 +143,7 @@
       function addMetric(title, data, subtitle) {
         subtitle = subtitle ? subtitle : '';
         if (isInt(data) === false) {
-          data = (parseFloat(data)).toFixed(1) + '%';
+          data = (parseFloat(data)).toFixed(2) + '%';
         }
         var metric = '<div class="metric"><div class="metric-title">' + title + '</div><p class="bold">' + subtitle + '</p><div class="metric-data">' + data + '</div></div>';
         $(metric).appendTo('#metrics');
