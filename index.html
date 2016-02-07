@@ -30,6 +30,11 @@
       p {
         font-size: 14px;
       }
+      p.bold {
+        font-size: 13px;
+        text-align: center;
+        font-weight: bold;
+      }
       .label {
         display: inline-block;
         margin-right: 10px;
@@ -133,11 +138,12 @@
         return n % 1 === 0;
       }
       
-      function addMetric(title, data) {
+      function addMetric(title, data, subtitle) {
+        subtitle = subtitle ? subtitle : '';
         if (isInt(data) === false && typeof data != 'string') {
           data = (data*100).toFixed(1) + '%';
         }
-        var metric = '<div class="metric"><div class="metric-title">' + title + '</div><div class="metric-data">' + data + '</div></div>';
+        var metric = '<div class="metric"><div class="metric-title">' + title + '</div><p class="bold">' + subtitle + '</p><div class="metric-data">' + data + '</div></div>';
         $(metric).appendTo('#metrics');
       }
       
@@ -213,7 +219,7 @@
             funnelResults(campaign, campaignResults, dates);
           }
           $('.loading').hide();
-          addMetric('Highest Performing Campaign', bestCampaign[0]);
+          addMetric('Highest Performing Campaign', bestCampaign[0], bestCampaign[1]);
         });
       }
       
