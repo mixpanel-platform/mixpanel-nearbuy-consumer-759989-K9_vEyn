@@ -128,7 +128,7 @@
 
       var dateSelect = $('#dateSelect').MPDatepicker();
       var intervalSelect = $('#intervalSelect').MPSelect(intervals);
-      invervalSelect.val('30');
+      intervalSelect.val('30');
       var campaignIds, bestCampaign = ['', 0];
       
       MP.api.propertyValues('$campaign_delivery', 'campaign_id').done(function(results) {
