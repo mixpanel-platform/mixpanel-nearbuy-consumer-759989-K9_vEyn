@@ -180,7 +180,7 @@
         Promise.all(metricPromises).then(function(data) {
           addMetric('Total Notifications Sent', data[0]);
           addMetric('Total Notifications Opened', data[1]);
-          addMetric('Overall Conversion Rate', data[1]/data[0]*100);
+          addMetric('Overall Open Rate', data[1]/data[0]*100);
         });
       }
 
@@ -208,7 +208,6 @@
                 segment: 'message_id'
             };
             MP.api.funnel('$campaign_delivery', '$campaign_open', '$custom_event:108869', params).done(function(results) {
-              console.log(results);
               data = {};
               data[campaignId] = results;
               resolve(data);
