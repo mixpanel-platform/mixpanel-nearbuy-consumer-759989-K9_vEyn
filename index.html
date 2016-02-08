@@ -272,8 +272,16 @@
           graph.MPChart({
             chartType: 'line',
             highchartsOptions: {
+              global: {
+                useUTC: false,
+              },
               xAxis: {
                 type: 'datetime',
+                labels: {
+                  formatter: function() {
+                    return Highcharts.dateFormat('%H:%M', this.value);
+                  }
+                },
                 dateTimeLabelFormats: {
                   millisecond: '%H:%M',
                 	second: '%H:%M',
@@ -283,7 +291,8 @@
                 	week: '%H:%M',
                 	month: '%H:%M',
                 	year: '%H:%M'
-                }
+                },
+                minTickInterval: 3600000,
               }
             }
           });
