@@ -40,7 +40,7 @@
         margin-right: 10px;
       }
       .label.right {
-        margin-left: 278px;
+        margin-left: 270px;
       }
       #metrics {
         margin: 15px 0;
@@ -180,7 +180,7 @@
         Promise.all(metricPromises).then(function(data) {
           addMetric('Total Notifications Sent', data[0]);
           addMetric('Total Notifications Opened', data[1]);
-          addMetric('Overall Open Rate', data[1]/data[0]*100);
+          addMetric('Overall Notification Open Rate', data[1]/data[0]*100);
         });
       }
 
@@ -204,7 +204,7 @@
                 from: dates.from,
                 to: dates.to,
                 length: interval,
-                where: '(properties["campaign_id"] == ' + campaignId + ')',
+                where: '(string(properties["campaign_id"]) == "' + campaignId + '")',
                 segment: 'message_id'
             };
             MP.api.funnel('$campaign_delivery', '$campaign_open', '$custom_event:108869', params).done(function(results) {
@@ -243,6 +243,7 @@
                 sentDate = date;
               }
               open += variantResults[date][1].count;
+              console.log(open);
               opentime += variantResults[date][1].count * variantResults[date][1].avg_time;
               successful += variantResults[date][2].count;
               successtime += variantResults[date][2].count * variantResults[date][2].avg_time;
