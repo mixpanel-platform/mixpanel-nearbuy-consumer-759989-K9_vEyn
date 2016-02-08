@@ -204,10 +204,9 @@
                 from: dates.from,
                 to: dates.to,
                 length: interval,
-                where: '(string(properties["campaign_id"]) == "' + campaignId + '")',
                 segment: 'message_id'
             };
-            MP.api.funnel('$campaign_delivery', '$campaign_open', '$custom_event:108869', params).done(function(results) {
+            MP.api.funnel({event: '$campaign_delivery', selector: '(string(properties["campaign_id"]) == "' + campaignId + '")'}, '$campaign_open', '$custom_event:108869', params).done(function(results) {
               data = {};
               data[campaignId] = results;
               resolve(data);
