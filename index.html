@@ -257,7 +257,7 @@
         table += '</table>';
         // if campaign meets criteria, add it to dashboard
         if (totalSent > sentThreshold) {
-          var campaignName = campaignjson.hasOwnProperty(campaignId) ? campaignjson[campaignId] : campaignjson2[campaignId];
+          var campaignName = campaignjson.hasOwnProperty(campaignId) ? campaignjson[campaignId] : campaignjson2.hasOwnProperty(campaignId) ? campaignjson2[campaignId] : campaignId;
           var campaignDiv = $('<div class="campaign"></div>').appendTo('#detail');
           $('<h3>' + campaignName + '</h3>').appendTo(campaignDiv);
           var overall = (totalSuccess/totalSent*100).toFixed(2);
